@@ -1,4 +1,4 @@
-# Source code for Svelte Tutorials at MDN Web docs
+# Source code for Svelte Tutorials at MDN Web docs (I used this tutorial for the app, code is up to Chapter 3, https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/Svelte_variables_props)
 
 Source code of the To-Do list app for the Svelte tutorials at [Understanding client-side JavaScript frameworks](Understanding client-side JavaScript frameworks) series at MDN Web docs.
 
