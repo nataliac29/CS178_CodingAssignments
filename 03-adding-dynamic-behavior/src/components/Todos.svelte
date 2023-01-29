@@ -1,15 +1,46 @@
 <!-- Todos.svelte -->
-<div class="todoapp stack-large">
+<script>
+  // #Properties
+  export let todos = [];
 
+  $: totalTodos = todos.length;
+  $: completedTodos = todos.filter((todo) => todo.completed).length;
+
+  let newTodoName = "";
+
+  function removeTodo(todo) {
+    todos = todos.filter((t) => t.id !== todo.id);
+  }
+  function addTodo() {
+    todos = [...todos, { id: 999, name: newTodoName, completed: false }];
+    newTodoName = "";
+  }
+
+  let newTodoId;
+  $: {
+    if (totalTodos === 0) {
+      newTodoId = 1;
+    } else {
+      newTodoId = Math.max(...todos.map((t) => t.id)) + 1;
+    }
+  }
+
+  $: console.log("newTodoName: ", newTodoName);
+</script>
+
+<div class="todoapp stack-large">
   <!-- NewTodo -->
-  <form>
+  <form on:submit|preventDefault={addTodo}>
     <h2 class="label-wrapper">
-      <label for="todo-0" class="label__lg">
-        What needs to be done?
-      </label>
+      <label for="todo-0" class="label__lg"> What needs to be done? </label>
     </h2>
-    <input type="text" id="todo-0" autocomplete="off"
-      class="input input__lg" />
+    <input
+      bind:value={newTodoName}
+      type="text"
+      id="todo-0"
+      autocomplete="off"
+      class="input input__lg"
+    />
     <button type="submit" disabled="" class="btn btn__primary btn__lg">
       Add
     </button>
@@ -35,78 +66,42 @@
   </div>
 
   <!-- TodosStatus -->
-  <h2 id="list-heading">2 out of 3 items completed</h2>
+  <h2 id="list-heading">
+    {completedTodos} out of {totalTodos} items completed
+  </h2>
 
-  <!-- Todos -->
+  <!-- To-dos -->
   <ul role="list" class="todo-list stack-large" aria-labelledby="list-heading">
-
-    <!-- todo-1 (editing mode) -->
-    <li class="todo">
-      <div class="stack-small">
-        <form class="stack-small">
-          <div class="form-group">
-            <label for="todo-1" class="todo-label">
-              New name for 'Create a Svelte starter app'
-            </label>
-            <input type="text" id="todo-1" autocomplete="off" class="todo-text" />
+    <!-- #controlFlow -->
+    {#each todos as todo (todo.id)}
+      <li class="todo">
+        <div class="stack-small">
+          <div class="c-cb">
+            <input
+              type="checkbox"
+              id="todo-{todo.id}"
+              on:click={() => (todo.completed = !todo.completed)}
+              checked={todo.completed}
+            />
+            <label for="todo-{todo.id}" class="todo-label"> {todo.name} </label>
           </div>
           <div class="btn-group">
-            <button class="btn todo-cancel" type="button">
-              Cancel
-              <span class="visually-hidden">renaming Create a Svelte starter app</span>
+            <button type="button" class="btn">
+              Edit <span class="visually-hidden">{todo.name}</span>
             </button>
-            <button class="btn btn__primary todo-edit" type="submit">
-              Save
-              <span class="visually-hidden">new name for Create a Svelte starter app</span>
+            <button
+              type="button"
+              class="btn btn__danger"
+              on:click={() => removeTodo(todo)}
+            >
+              Delete <span class="visually-hidden">{todo.name}</span>
             </button>
           </div>
-        </form>
-      </div>
-    </li>
-
-    <!-- todo-2 -->
-    <li class="todo">
-      <div class="stack-small">
-        <div class="c-cb">
-          <input type="checkbox" id="todo-2" checked/>
-          <label for="todo-2" class="todo-label">
-            Create your first component
-          </label>
         </div>
-        <div class="btn-group">
-          <button type="button" class="btn">
-            Edit
-            <span class="visually-hidden">Create your first component</span>
-          </button>
-          <button type="button" class="btn btn__danger">
-            Delete
-            <span class="visually-hidden">Create your first component</span>
-          </button>
-        </div>
-      </div>
-    </li>
-    
-    <!-- todo-3 -->
-    <li class="todo">
-      <div class="stack-small">
-        <div class="c-cb">
-          <input type="checkbox" id="todo-3" />
-          <label for="todo-3" class="todo-label">
-            Complete the rest of the tutorial
-          </label>
-        </div>
-        <div class="btn-group">
-          <button type="button" class="btn">
-            Edit
-            <span class="visually-hidden">Complete the rest of the tutorial</span>
-          </button>
-          <button type="button" class="btn btn__danger">
-            Delete
-            <span class="visually-hidden">Complete the rest of the tutorial</span>
-          </button>
-        </div>
-      </div>
-    </li>
+      </li>
+    {:else}
+      <li>Nothing to do here!</li>
+    {/each}
   </ul>
 
   <hr />
@@ -116,5 +111,4 @@
     <button type="button" class="btn btn__primary">Check all</button>
     <button type="button" class="btn btn__primary">Remove completed</button>
   </div>
-
 </div>
